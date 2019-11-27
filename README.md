@@ -8,7 +8,10 @@ A pytorch implementation of [dorefa](https://arxiv.org/abs/1606.06160).The code 
 * tb-nightly, future (for tensorboard)
 
 ## Cifar-10 Accuracy
+
 Quantized model are trained from scratch
+
+
 
 | Model        | W_bit   |  A_bit  |Acc  |
 | :------ :  | :-----:  | :----:  |:----:  |
