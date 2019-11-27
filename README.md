@@ -1,5 +1,6 @@
 # Dorefa-net 
 A pytorch implementation of [dorefa](https://arxiv.org/abs/1606.06160).The code is inspired by [LaVieEnRoseSMZ](https://github.com/LaVieEnRoseSMZ/AutoBNN) and [zzzxxxttt](https://github.com/kuangliu/pytorch-cifar).
+
 ##Requirements
 * python > 3.5
 * torch >= 1.1.0
@@ -15,6 +16,7 @@ Quantized model are trained from scratch
 | resnet-18      |   4   |   4      |  94.05%     |
 | resnet-18      |   ...   |   ...      |  ...     |
 
+
 ##Usages
 * To train the model 
 ```
@@ -26,6 +28,7 @@ tensorboard --logdir='your_log_dir'
 ```
 from the command line and then navigating to https://localhost:6006 should show the following.
 ....
+
 
 ##To do
 - [ ]    Train on imagenet2012
