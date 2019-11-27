@@ -19,6 +19,12 @@ Quantized model are trained from scratch
 | resnet-18      |   4   |   4      |  94.05%     |
 | resnet-18      |   ...   |   ...      |  ...     |
 
+| Model | W_bit | A_bit | Acc |
+| :-: | :-: | :-: |:-: |
+| resnet-18      | 32   |   32     | 94.71%     |
+| resnet-18      |   4   |   4      |  94.05%     |
+| resnet-18      |   ...   |   ...      |  ...     |
+
 
 ## Usages
 * To train the model 
