@@ -28,6 +28,7 @@ python3 cifar_train_eval.py
 tensorboard --logdir='your_log_dir'
 ```
 from the command line and then navigating to https://localhost:6006 should show the following.
+
 <img src="/Users/jizhe/Desktop/tensorboard.png" width = "50%" height = "50%" alt="图片名称" align="center" />
 
 
