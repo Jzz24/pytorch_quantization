@@ -14,8 +14,8 @@ Quantized model are trained from scratch
 | Model | W_bit | A_bit | Acc |
 | :-: | :-: | :-: |:-: |
 | resnet-18      | 32   |   32     | 94.71%     |
-| resnet-18      |   4   |   4      |  94.05%     |
-| resnet-18      |   ...   |   ...      |  ...     |
+| resnet-18      |   4   |   4      |  94.36%     |
+| resnet-18      |   1   |   4      |  93.87%     |
 
 
 ## Usages
@@ -28,7 +28,7 @@ python3 cifar_train_eval.py
 tensorboard --logdir='your_log_dir'
 ```
 from the command line and then navigating to https://localhost:6006 should show the following.
-....
+<img src="/Users/jizhe/Desktop/tensorboard.png" width = "50%" height = "50%" alt="图片名称" align="center" />
 
 
 ## To do
