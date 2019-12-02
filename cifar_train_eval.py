@@ -14,7 +14,7 @@ cudnn.benchmark = True
 import torchvision
 
 
-from models.resnet import *
+from models.cifar.resnet import *
 
 
 from utils.preprocess import *
@@ -25,9 +25,9 @@ parser = argparse.ArgumentParser(description='dorefa-net implementation')
 
 parser.add_argument('--root_dir', type=str, default='./')
 parser.add_argument('--data_dir', type=str, default='./data')
-parser.add_argument('--log_name', type=str, default='resnet_4w4a')
+parser.add_argument('--log_name', type=str, default='resnet_1w1a_f')
 parser.add_argument('--pretrain', action='store_true', default=False)
-parser.add_argument('--pretrain_dir', type=str, default='./ckpt/resnet_2w2a/')
+parser.add_argument('--pretrain_dir', type=str, default='resnet_1w4a')
 
 
 parser.add_argument('--cifar', type=int, default=10)
@@ -45,7 +45,7 @@ best_acc = 0  # best test accuracy
 start_epoch = 0
 
 cfg.log_dir = os.path.join(cfg.root_dir, 'logs', cfg.log_name)
-cfg.ckpt_dir = os.path.join(cfg.root_dir, 'ckpt', cfg.log_name)
+cfg.ckpt_dir = os.path.join(cfg.root_dir, 'ckpt', cfg.pretrain_dir)
 
 os.makedirs(cfg.log_dir, exist_ok=True)
 os.makedirs(cfg.ckpt_dir, exist_ok=True)

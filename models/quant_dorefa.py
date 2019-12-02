@@ -54,8 +54,8 @@ def dorefa_a(input, nbit_a):
 
 class QuanConv(nn.Conv2d):
     """docstring for QuanConv"""
-    def __init__(self, in_channels, out_channels, kernel_size, quan_name_w='dorefa', quan_name_a='dorefa', nbit_w=4,
-                 nbit_a=4, stride=1,
+    def __init__(self, in_channels, out_channels, kernel_size, quan_name_w='dorefa', quan_name_a='dorefa', nbit_w=32,
+                 nbit_a=32, stride=1,
                  padding=0, dilation=1, groups=1,
                  bias=True):
         super(QuanConv, self).__init__(
@@ -87,7 +87,7 @@ class QuanConv(nn.Conv2d):
         return output
 
 class Linear_Q(nn.Linear):
-    def __init__(self, in_features, out_features, bias=True, quan_name_w='dorefa', quan_name_a='dorefa', nbit_w=4, nbit_a=4):
+    def __init__(self, in_features, out_features, bias=True, quan_name_w='dorefa', quan_name_a='dorefa', nbit_w=32, nbit_a=32):
         super(Linear_Q, self).__init__(in_features, out_features, bias)
         self.nbit_w = nbit_w
         self.nbit_a = nbit_a

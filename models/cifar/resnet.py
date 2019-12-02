@@ -1,21 +1,20 @@
 import torch
 import torch.nn as nn
-# from utils.quant_dorefa import *
-from .quant_dorefa import QuanConv as Conv
-from .quant_dorefa import Linear_Q
-
+from ..quant_dorefa import QuanConv as Conv
+from ..quant_dorefa import Linear_Q
 
 import torch.nn.functional as F
 
 
 def conv3x3(in_planes, out_planes, stride=1):
     """3x3 convolution with padding"""
-    return Conv(in_planes, out_planes, 3, stride=stride, padding=1, bias=False)
+    return Conv(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
 
 
 def conv1x1(in_planes, out_planes, stride=1):
     """1x1 convolution"""
     return Conv(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+
 
 def linear(in_featrues, out_features):
     return Linear_Q(in_featrues, out_features)
@@ -51,17 +50,17 @@ class Bottleneck(nn.Module):
 
     def __init__(self, in_planes, planes, stride=1):
         super(Bottleneck, self).__init__()
-        self.conv1 = conv3x3(in_planes, planes, kernel_size=1, bias=False)
+        self.conv1 = conv1x1(in_planes, planes, stride=1)
         self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = conv3x3(planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.conv2 = conv3x3(planes, planes, stride=stride)
         self.bn2 = nn.BatchNorm2d(planes)
-        self.conv3 = conv3x3(planes, self.expansion*planes, kernel_size=1, bias=False)
+        self.conv3 = conv1x1(planes, self.expansion*planes, stride=1)
         self.bn3 = nn.BatchNorm2d(self.expansion*planes)
 
         self.shortcut = nn.Sequential()
         if stride != 1 or in_planes != self.expansion*planes:
             self.shortcut = nn.Sequential(
-                conv1x1(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
+                conv1x1(in_planes, self.expansion*planes,stride=stride),
                 nn.BatchNorm2d(self.expansion*planes)
             )
 
