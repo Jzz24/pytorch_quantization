@@ -18,10 +18,20 @@ Quantized model are trained from scratch
 | resnet-18      |   1   |   4      |  93.87%     |
 
 
+## ImageNet Accuracy
+
+Quantized model are trained from scratch
+
+| Model | W_bit | A_bit | Top1 |Top5 |
+| :-: | :-: | :-: |:-: |:-: |
+| resnet-18      | 32   |   32     | 69.80%     |89.32%  |
+| resnet-18      | 8   |   8     | ...     |...  |
+
 ## Usages
+config your W_bit and A_bit in models/quant_dorefa.py   
 * To train the model 
 ```
-python3 cifar_train_eval.py
+python3 cifar_train_eval.py    or    python3 imagenet_dali_loader.py
 ```
 * To check the tensorboard log 
 ```
@@ -34,7 +44,7 @@ from the command line and then navigating to https://localhost:6006 should show 
 
 
 ## To do
-- [ ]    Train on imagenet2012
+- [x]    Train on imagenet2012
 - [ ]    Fold bn
 - [ ]    Test speedup from quantization and bn fold
 - [ ]    Deploy models to embedded devices
