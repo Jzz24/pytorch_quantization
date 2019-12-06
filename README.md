@@ -6,6 +6,7 @@ A pytorch implementation of [dorefa](https://arxiv.org/abs/1606.06160).The code 
 * torch >= 1.1.0
 * torchvision >= 0.4.0
 * tb-nightly, future (for tensorboard)
+* nvidia-dali >= 0.12 (faster [dataloader](https://docs.nvidia.com/deeplearning/sdk/dali-developer-guide/docs/index.html#))
 
 ## Cifar-10 Accuracy
 
