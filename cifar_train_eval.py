@@ -1,6 +1,5 @@
 import os
 import time
-import numpy
 import argparse
 from datetime import datetime
 
@@ -9,14 +8,10 @@ import torch.optim as optim
 import torch.backends.cudnn as cudnn
 from torch.utils.tensorboard import SummaryWriter
 
-
 cudnn.benchmark = True
 import torchvision
 
-
 from models.cifar.resnet import *
-
-
 from utils.preprocess import *
 from utils.bar_show import progress_bar
 
@@ -25,17 +20,16 @@ parser = argparse.ArgumentParser(description='dorefa-net implementation')
 
 parser.add_argument('--root_dir', type=str, default='./')
 parser.add_argument('--data_dir', type=str, default='./data')
-parser.add_argument('--log_name', type=str, default='resnet_1w1a_f')
+parser.add_argument('--log_name', type=str, default='resnet_1w1a')
 parser.add_argument('--pretrain', action='store_true', default=False)
-parser.add_argument('--pretrain_dir', type=str, default='resnet_1w4a')
-
+parser.add_argument('--pretrain_dir', type=str, default='resnet_1w1a')
 
 parser.add_argument('--cifar', type=int, default=10)
 parser.add_argument('--lr', type=float, default=0.1)
 parser.add_argument('--wd', type=float, default=1e-4)
 parser.add_argument('--train_batch_size', type=int, default=256)
 parser.add_argument('--eval_batch_size', type=int, default=100)
-parser.add_argument('--max_epochs', type=int, default=200)
+parser.add_argument('--max_epochs', type=int, default=300)
 parser.add_argument('--log_interval', type=int, default=40)
 parser.add_argument('--num_workers', type=int, default=2)
 
@@ -79,9 +73,9 @@ def main():
         model = torch.nn.DataParallel(model)
         cudnn.benchmark = True
 
-
-    optimizer = torch.optim.SGD(model.parameters(), lr=cfg.lr, momentum=0.9, weight_decay=cfg.wd)
-    lr_schedu = optim.lr_scheduler.MultiStepLR(optimizer, [100, 150, 180], gamma=0.1)
+    # optimizer = torch.optim.SGD(model.parameters(), lr=cfg.lr, momentum=0.9, weight_decay=cfg.wd)
+    optimizer = torch.optim.Adam(model.parameters(),lr=cfg.lr,weight_decay=cfg.wd)
+    lr_schedu = optim.lr_scheduler.MultiStepLR(optimizer, [100, 150, 250], gamma=0.1)
     criterion = torch.nn.CrossEntropyLoss().cuda()
     summary_writer = SummaryWriter(cfg.log_dir)
 

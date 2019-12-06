@@ -300,4 +300,3 @@ def test(epoch, model, eval_loader, criterion, optimizer, summary_writer):
 
 if __name__ == '__main__':
     main()
-
