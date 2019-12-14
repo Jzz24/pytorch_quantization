@@ -36,10 +36,11 @@ python3 cifar_train_eval.py
 python3 imagenet_torch_loader --multiprocessing-distributed    or    python3 imagenet_dali_loader.py 
 ```
 - To check the tensorboard log 
-```
-tensorboard --logdir='your_log_dir'
-```
-from the command line and then navigating to https://localhost:6006 should show the following.
+	```
+	tensorboard --logdir='your_log_dir'
+	```
+
+	then navigating to https://localhost:6006 should show the following.
 
 <img src="https://github.com/Jzz24/dorefa_pytorch/blob/master/doc/tensorboard.png" width = "65%" height = "50%" alt="图片名称" align="center" />
 
@@ -57,15 +58,11 @@ from the command line and then navigating to https://localhost:6006 should show 
 	This bn fuse test result is not serious. However, it is OK to explain the problem qualitatively.
 	
 	
-<center>
-
 | Model on CPU | before fuse | after fuse | 
 | :-: | :-: | :-: |
 | resnet-18      | 0.74 s   |   0.51 s     | 
 | resnet-34      |   1.41 s   |   0.92 s      |  
 | resnet-50      |   1.96 s   |   1.02 s      |  
-
-<center>
 
 
 ## To do
