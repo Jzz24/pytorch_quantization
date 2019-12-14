@@ -39,9 +39,9 @@ python3 imagenet_torch_loader --multiprocessing-distributed    or    python3 ima
 ```
 tensorboard --logdir='your_log_dir'
 ```
-from the command line and then navigating to https://localhost:6006 should show the following.
+	from the command line and then navigating to https://localhost:6006 should show the following.
 
-<img src="https://github.com/Jzz24/dorefa_pytorch/blob/master/doc/tensorboard.png" width = "65%" height = "50%" alt="图片名称" align="center" />
+	 <img src="https://github.com/Jzz24/dorefa_pytorch/blob/master/doc/tensorboard.png" width = "65%" height = "50%" alt="图片名称" align="center" />
 
 - To test the quantized model and bn fused 
 	- convert to the quantized model for inference
@@ -54,16 +54,18 @@ from the command line and then navigating to https://localhost:6006 should show 
 	```
 	Obviously, this fusion method is not suitable for quantized models. We will change the bn fuse in the future according to the [paper](https://arxiv.org/pdf/1806.08342.pdf) section 3.2.2.
 	
-This result is not serious. However, it is OK to explain the problem qualitatively.
+	This bn fuse test result is not serious. However, it is OK to explain the problem qualitatively.
 	
+	
+<center>
+
 | Model on CPU | before fuse | after fuse | 
 | :-: | :-: | :-: |
 | resnet-18      | 0.74 s   |   0.51 s     | 
 | resnet-34      |   1.41 s   |   0.92 s      |  
 | resnet-50      |   1.96 s   |   1.02 s      |  
 
-
-
+<center>
 
 
 ## To do
