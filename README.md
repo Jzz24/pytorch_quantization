@@ -41,7 +41,7 @@ tensorboard --logdir='your_log_dir'
 ```
 	from the command line and then navigating to https://localhost:6006 should show the following.
 
-	 <img src="https://github.com/Jzz24/dorefa_pytorch/blob/master/doc/tensorboard.png" width = "65%" height = "50%" alt="图片名称" align="center" />
+<img src="https://github.com/Jzz24/dorefa_pytorch/blob/master/doc/tensorboard.png" width = "65%" height = "50%" alt="图片名称" align="center" />
 
 - To test the quantized model and bn fused 
 	- convert to the quantized model for inference
