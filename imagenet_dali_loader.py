@@ -12,8 +12,7 @@ import torchvision.models as models
 
 cudnn.benchmark = True
 
-from models.cifar.resnet import *
-from models.imagenet.resnet import *
+from models.resnet_imagenet import *
 from utils.preprocess import *
 from utils.bar_show import *
 import warnings
@@ -35,6 +34,8 @@ parser.add_argument('--eval_batch_size', type=int, default=100)
 parser.add_argument('--max_epochs', type=int, default=90)
 parser.add_argument('--log_interval', type=int, default=40)
 parser.add_argument('--num_workers', type=int, default=8)
+parser.add_argument('--Wbits', type=int, default=8)
+parser.add_argument('--Abits', type=int, default=8)
 
 cfg = parser.parse_args()
 
@@ -60,7 +61,7 @@ def main():
 
     print('===> Building ResNet..')
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model = resnet18(pretrained=False).to(device)
+    model = resnet18(wbit=cfg.Wbits, abit=cfg.Abits, pretrained=False)
 
     if device == 'cuda':
         model = torch.nn.DataParallel(model)

@@ -18,8 +18,7 @@ import torchvision.models as models
 
 cudnn.benchmark = True
 
-from models.cifar.resnet import *
-from models.imagenet.resnet import *
+from models.resnet_imagenet import *
 
 
 
@@ -33,9 +32,9 @@ parser = argparse.ArgumentParser(description='dorefa-net imagenet2012 implementa
 
 parser.add_argument('--root_dir', type=str, default='./')
 parser.add_argument('--data_dir', type=str, default='/imagenet2012_datasets')
-parser.add_argument('--log_name', type=str, default='resnet_imagenet_float')
+parser.add_argument('--log_name', type=str, default='resnet_imagenet_4w4f')
 parser.add_argument('--pretrain', action='store_true', default=False)
-parser.add_argument('--pretrain_dir', type=str, default='resnet_float')
+parser.add_argument('--pretrain_dir', type=str, default='resnet_4w4f')
 
 
 parser.add_argument('--lr', type=float, default=0.1)
@@ -44,7 +43,9 @@ parser.add_argument('--train_batch_size', type=int, default=256)
 parser.add_argument('--eval_batch_size', type=int, default=100)
 parser.add_argument('--max_epochs', type=int, default=90)
 parser.add_argument('--log_interval', type=int, default=40)
-parser.add_argument('--num_workers', type=int, default=12)
+parser.add_argument('--num_workers', type=int, default=6)
+parser.add_argument('--Wbits', type=int, default=4)
+parser.add_argument('--Abits', type=int, default=4)
 
 parser.add_argument('--world-size', default=1, type=int,
                     help='number of nodes for distributed training')
@@ -66,6 +67,7 @@ parser.add_argument('--multiprocessing-distributed', action='store_true',
 
 
 cfg = parser.parse_args()
+
 
 best_acc = 0  # best test accuracy
 start_epoch = 0
@@ -118,7 +120,7 @@ def main_worker(gpu, ngpus_per_node, cfg):
 
     print('===> Building ResNet..')
 
-    model = resnet18(pretrained=False)
+    model = resnet18(wbit=cfg.Wbits, abit=cfg.Abits, pretrained=False)
     # model = models.__dict__[resnet18(pretrained=False)]
 
     if cfg.distributed:

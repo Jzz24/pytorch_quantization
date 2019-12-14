@@ -1,39 +1,46 @@
 import torch
 import torch.nn as nn
-from ..quant_dorefa import QuanConv as Conv
-from ..quant_dorefa import Linear_Q
+import numpy as np
+
+# from .model_utils.quant_dorefa import QuanConv as Conv
+# from .model_utils.quant_dorefa import *
+# from .model_utils.bn_fuse import fuse_module
+
+from model_utils.quant_dorefa import QuanConv as Conv
+from model_utils.quant_dorefa import *
+from model_utils.bn_fuse import fuse_module
 
 import torch.nn.functional as F
 
 
-def conv3x3(in_planes, out_planes, stride=1):
+def conv3x3(in_planes, out_planes, wbit, abit, stride=1):
     """3x3 convolution with padding"""
-    return Conv(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
+    return Conv(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False, nbit_w=wbit, nbit_a=abit)
 
 
-def conv1x1(in_planes, out_planes, stride=1):
+def conv1x1(in_planes, out_planes, wbit, abit, stride=1):
     """1x1 convolution"""
-    return Conv(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+    return Conv(in_planes, out_planes, kernel_size=1, stride=stride, bias=False, nbit_w=wbit, nbit_a=abit)
 
 
-def linear(in_featrues, out_features):
-    return Linear_Q(in_featrues, out_features)
+def linear(in_featrues, out_features, wbit, abit):
+    return Linear_Q(in_featrues, out_features, nbit_w=wbit, nbit_a=abit)
 
 
 class BasicBlock(nn.Module):
     expansion = 1
 
-    def __init__(self, in_planes, planes, stride=1):
+    def __init__(self, in_planes, planes, wbit, abit, stride=1):
         super(BasicBlock, self).__init__()
-        self.conv1 = conv3x3(in_planes, planes, stride=stride)
+        self.conv1 = conv3x3(in_planes, planes, wbit=wbit, abit=abit, stride=stride)
         self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = conv3x3(planes, planes, stride=1)
+        self.conv2 = conv3x3(planes, planes, wbit=wbit, abit=abit, stride=1)
         self.bn2 = nn.BatchNorm2d(planes)
 
         self.shortcut = nn.Sequential()
         if stride != 1 or in_planes != self.expansion*planes:
             self.shortcut = nn.Sequential(
-                conv1x1(in_planes, self.expansion*planes, stride=stride),
+                conv1x1(in_planes, self.expansion*planes, wbit=wbit, abit=abit, stride=stride),
                 nn.BatchNorm2d(self.expansion*planes)
             )
 
@@ -48,19 +55,19 @@ class BasicBlock(nn.Module):
 class Bottleneck(nn.Module):
     expansion = 4
 
-    def __init__(self, in_planes, planes, stride=1):
+    def __init__(self, in_planes, planes, wbit, abit, stride=1):
         super(Bottleneck, self).__init__()
-        self.conv1 = conv1x1(in_planes, planes, stride=1)
+        self.conv1 = conv1x1(in_planes, planes, wbit=wbit, abit=abit, stride=1)
         self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = conv3x3(planes, planes, stride=stride)
+        self.conv2 = conv3x3(planes, planes, wbit=wbit, abit=abit, stride=stride)
         self.bn2 = nn.BatchNorm2d(planes)
-        self.conv3 = conv1x1(planes, self.expansion*planes, stride=1)
+        self.conv3 = conv1x1(planes, self.expansion*planes,wbit=wbit, abit=abit, stride=1)
         self.bn3 = nn.BatchNorm2d(self.expansion*planes)
 
         self.shortcut = nn.Sequential()
         if stride != 1 or in_planes != self.expansion*planes:
             self.shortcut = nn.Sequential(
-                conv1x1(in_planes, self.expansion*planes,stride=stride),
+                conv1x1(in_planes, self.expansion*planes,wbit=wbit,abit=abit,stride=stride),
                 nn.BatchNorm2d(self.expansion*planes)
             )
 
@@ -73,18 +80,18 @@ class Bottleneck(nn.Module):
         return out
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10):
+    def __init__(self, block, num_blocks, wbit, abit, num_classes=10):
         super(ResNet, self).__init__()
         self.in_planes = 64
 
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)  # do not quntize the first layer
         # self.conv1 = Conv(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
-        self.linear = linear(512*block.expansion, num_classes)
+        self.layer1 = self._make_layer(block, 64, num_blocks[0], wbit=wbit, abit=abit, stride=1)
+        self.layer2 = self._make_layer(block, 128, num_blocks[1], wbit=wbit, abit=abit, stride=2)
+        self.layer3 = self._make_layer(block, 256, num_blocks[2], wbit=wbit, abit=abit, stride=2)
+        self.layer4 = self._make_layer(block, 512, num_blocks[3], wbit=wbit, abit=abit, stride=2)
+        self.linear = linear(512*block.expansion, num_classes, wbit=8, abit=abit)
         # self.linear = nn.Linear(512 * block.expansion, num_classes)
 
         # weight initialization
@@ -101,11 +108,11 @@ class ResNet(nn.Module):
                 nn.init.zeros_(m.bias)
 
 
-    def _make_layer(self, block, planes, num_blocks, stride):
+    def _make_layer(self, block, planes, num_blocks, wbit, abit, stride):
         strides = [stride] + [1]*(num_blocks-1)
         layers = []
         for stride in strides:
-            layers.append(block(self.in_planes, planes, stride))
+            layers.append(block(self.in_planes, planes, wbit, abit, stride))
             self.in_planes = planes * block.expansion
         return nn.Sequential(*layers)
 
@@ -121,25 +128,30 @@ class ResNet(nn.Module):
         out = self.linear(out)
         return out
 
-def ResNet18():
-    return ResNet(BasicBlock, [2,2,2,2])
+def ResNet18(wbit, abit):
+    return ResNet(BasicBlock, [2,2,2,2], wbit=wbit, abit=abit)
 
-def ResNet34():
-    return ResNet(BasicBlock, [3,4,6,3])
+def ResNet34(wbit, abit):
+    return ResNet(BasicBlock, [3,4,6,3], wbit=wbit, abit=abit)
 
-def ResNet50():
-    return ResNet(Bottleneck, [3,4,6,3])
+def ResNet50(wbit, abit):
+    return ResNet(Bottleneck, [3,4,6,3], wbit=wbit, abit=abit)
 
-def ResNet101():
-    return ResNet(Bottleneck, [3,4,23,3])
+def ResNet101(wbit, abit):
+    return ResNet(Bottleneck, [3,4,23,3], wbit=wbit, abit=abit)
 
-def ResNet152():
-    return ResNet(Bottleneck, [3,8,36,3])
+def ResNet152(wbit, abit):
+    return ResNet(Bottleneck, [3,8,36,3], wbit=wbit, abit=abit)
 
 
 def test():
-    net = ResNet18()
+    net = ResNet18(wbit=32,abit=32)
+    print (net)
+    fuse_module(net)
     print (net)
     y = net(torch.ones(1,3,32,32))
     print(y)
+
+if __name__ == '__main__':
+    test()
 
