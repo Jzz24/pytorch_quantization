@@ -40,9 +40,7 @@ python3 imagenet_torch_loader --multiprocessing-distributed    or    python3 ima
 	tensorboard --logdir='your_log_dir'
 	```
 
-	then navigating to https://localhost:6006 should show the following.
-
-<img src="https://github.com/Jzz24/dorefa_pytorch/blob/master/doc/tensorboard.png" width = "65%" height = "50%" alt="图片名称" align="center" />
+	then navigating to https://localhost:6006 .
 
 - To test the quantized model and bn fused 
 	- convert to the quantized model for inference
