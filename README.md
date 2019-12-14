@@ -26,15 +26,16 @@ Quantized model are trained from scratch
 | Model | W_bit | A_bit | Top1 |Top5 |
 | :-: | :-: | :-: |:-: |:-: |
 | resnet-18      | 32   |   32     | 69.80%     |89.32%  |
-| resnet-18      | 8   |   8     | ...     |...  |
+| resnet-18      | 4   |   4     | 66.60%     |87.15%  |
 
 ## Usages
-config your W_bit and A_bit in models/quant_dorefa.py   
-* To train the model 
+Download the ImageNet dataset and move validation images to labeled subfolders.To do this, you can use the following [script](https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh)
+- To train the model 
 ```
-python3 cifar_train_eval.py    or    python3 imagenet_dali_loader.py
+python3 cifar_train_eval.py    
+python3 imagenet_torch_loader --multiprocessing-distributed    or    python3 imagenet_dali_loader.py 
 ```
-* To check the tensorboard log 
+- To check the tensorboard log 
 ```
 tensorboard --logdir='your_log_dir'
 ```
@@ -42,11 +43,32 @@ from the command line and then navigating to https://localhost:6006 should show 
 
 <img src="https://github.com/Jzz24/dorefa_pytorch/blob/master/doc/tensorboard.png" width = "65%" height = "50%" alt="图片名称" align="center" />
 
+- To test the quantized model and bn fused 
+	- convert to the quantized model for inference
+	```
+	python3 test_fused_quant_model.py
+	```
+	- test bn fuse on the float model
+	```
+	python3 bn_fuse.py
+	```
+	Obviously, this fusion method is not suitable for quantized models. We will change the bn fuse in the future according to the [paper](https://arxiv.org/pdf/1806.08342.pdf) section 3.2.2.
+	
+This result is not serious. However, it is OK to explain the problem qualitatively.
+	
+| Model on CPU | before fuse | after fuse | 
+| :-: | :-: | :-: |
+| resnet-18      | 0.74 s   |   0.51 s     | 
+| resnet-34      |   1.41 s   |   0.92 s      |  
+| resnet-50      |   1.96 s   |   1.02 s      |  
+
+
+
 
 
 ## To do
 - [x]    Train on imagenet2012
-- [ ]    Fold bn
-- [ ]    Test speedup from quantization and bn fold
+- [x]    Fold bn
+- [x]    Test speedup from quantization and bn fold
 - [ ]    Deploy models to embedded devices
 - [ ]    ...
